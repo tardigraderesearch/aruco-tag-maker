@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Launchers: `run.sh`, `run.command` and `run.bat` now only find Python 3.11+ and
+  hand over to a shared `launcher.py`, so setup behaves the same on every OS. Fixes
+  `run.bat` failing on Windows because cmd mis-parsed inline Python.
+- Tests: GUI smoke test no longer opens the modal success dialog (it hung on macOS
+  CI); tests time out after 120 s and CI jobs after 20 minutes.
+
 ## v0.1.0 (2026-10-22)
 
 First release.

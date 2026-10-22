@@ -34,7 +34,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest>=8", "trimesh>=4.0"]
+test = ["pytest>=8", "pytest-timeout>=2.2", "trimesh>=4.0"]
 
 [project.urls]
 Homepage = "https://github.com/evilhobo1911/aruco-tag-maker"
@@ -52,3 +52,5 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+# A hung Tk window must fail the run, not stall CI.
+timeout = 120

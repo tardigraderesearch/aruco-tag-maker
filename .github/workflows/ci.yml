@@ -8,6 +8,7 @@ jobs:
   test:
     name: tests (${{ matrix.os }}, Python ${{ matrix.python }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
@@ -37,6 +38,7 @@ jobs:
   launcher:
     name: launcher (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:

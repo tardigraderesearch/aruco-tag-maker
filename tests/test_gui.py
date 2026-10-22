@@ -20,6 +20,10 @@ def app():
     from aruco_tag_maker.gui import TagMakerApp
 
     application = TagMakerApp(root)
+    # The real success dialog grabs input on a withdrawn root, which can block
+    # the event loop on macOS; record the call instead.
+    application.success_calls = []
+    application._success_dialog = lambda folder, count: application.success_calls.append(count)
     yield application
     root.destroy()
 
@@ -58,3 +62,4 @@ def test_fill_names_and_export(app, tmp_path):
     assert not app.busy
     assert (tmp_path / "out" / "stl" / "tag_03.stl").is_file()
     assert "verified" in app.status.get()
+    assert app.success_calls == [3]
