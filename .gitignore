@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# launcher environment
+.venv/
+venv/
+
+# exports made while trying things out
+aruco-tags/
+out/
+
+# editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
