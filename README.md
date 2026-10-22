@@ -30,7 +30,8 @@ Download or clone this repository, then:
 | **macOS** | double-click `run.command` (or `./run.sh` in Terminal) |
 | **Windows** | double-click `run.bat` |
 
-That is all. The launcher:
+That is all. Each launcher only finds Python and hands over to `launcher.py`
+(standard library only), so the steps are the same on every system:
 
 1. finds Python 3.11 or newer (and tells you exactly what to install if there is none),
 2. checks that Tk (the window toolkit) is available, with the fix for your system if not,
