@@ -87,6 +87,21 @@ class TagMakerApp:
         root = self.root
         theme.apply(root)
 
+        # window controls (tiling desktops often draw no title bar)
+        header = ttk.Frame(root, padding=(12, 10, 12, 0))
+        header.pack(fill="x")
+        ttk.Label(header, text="ArUco Tag Maker", style="Title.TLabel").pack(side="left")
+        ttk.Button(header, text="\u2715", style="Close.TButton", width=3,
+                   command=self.close).pack(side="right")
+        ttk.Button(header, text="\u25a2", style="Chrome.TButton", width=3,
+                   command=self.toggle_fullscreen).pack(side="right", padx=(0, 6))
+        ttk.Button(header, text="\u2013", style="Chrome.TButton", width=3,
+                   command=self.root.iconify).pack(side="right", padx=(0, 6))
+        root.bind("<F11>", lambda e: self.toggle_fullscreen())
+        root.bind("<Escape>", lambda e: self.toggle_fullscreen(False))
+        root.bind("<Control-q>", lambda e: self.close())
+        root.protocol("WM_DELETE_WINDOW", self.close)
+
         outer = ttk.Frame(root, padding=12)
         outer.pack(fill="both", expand=True)
         outer.columnconfigure(0, weight=1)
@@ -104,6 +119,10 @@ class TagMakerApp:
                                      textvariable=self.size_var)
         self.size_spin.grid(row=0, column=3, padx=6)
         ttk.Label(top, textvariable=self.size_hint, style="Muted.TLabel").grid(row=0, column=4, sticky="w")
+        top.columnconfigure(5, weight=1)
+        self.opts_btn = ttk.Button(top, text="Options \u25be", style="Chrome.TButton",
+                                   command=self.toggle_options)
+        self.opts_btn.grid(row=0, column=6, sticky="e")
         ttk.Label(top, textvariable=self.count_error, style="Error.TLabel").grid(
             row=1, column=0, columnspan=5, sticky="w")
 
@@ -125,6 +144,10 @@ class TagMakerApp:
                         variable=self.engrave_var).pack(side="left")
         self._small_spin(row2, "  depth (mm)", self.depth_var, 0.1, 5, 0.1, 5)
         ttk.Label(opts, textvariable=self.settings_error, style="Error.TLabel").pack(anchor="w")
+        self.opts = opts
+        opts.grid_remove()  # collapsed by default so the tag list gets the room
+        self.settings_error.trace_add(
+            "write", lambda *_: self.settings_error.get() and self.toggle_options(True))
 
         # 3. paginated tag list
         listbox = ttk.LabelFrame(outer, text="Tags", padding=(6, 4))
@@ -433,6 +456,27 @@ class TagMakerApp:
             pass
         if self.root.winfo_exists():
             self.root.after(50, self._poll_events)
+
+    def toggle_options(self, show: bool | None = None) -> None:
+        if show is None:
+            show = not self.opts.winfo_ismapped()
+        if show:
+            self.opts.grid()
+            self.opts_btn.configure(text="Options \u25b4")
+        else:
+            self.opts.grid_remove()
+            self.opts_btn.configure(text="Options \u25be")
+
+    def toggle_fullscreen(self, state: bool | None = None) -> None:
+        if state is None:
+            state = not bool(self.root.attributes("-fullscreen"))
+        self.root.attributes("-fullscreen", state)
+
+    def close(self) -> None:
+        if self.busy and not messagebox.askyesno(
+                "Export running", "An export is still running. Quit anyway?", parent=self.root):
+            return
+        self.root.destroy()
 
     def _set_busy(self, busy: bool) -> None:
         self.busy = busy
