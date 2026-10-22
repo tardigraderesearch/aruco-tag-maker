@@ -5,8 +5,10 @@
 - Launchers: `run.sh`, `run.command` and `run.bat` now only find Python 3.11+ and
   hand over to a shared `launcher.py`, so setup behaves the same on every OS. Fixes
   `run.bat` failing on Windows because cmd mis-parsed inline Python.
-- Tests: GUI smoke test no longer opens the modal success dialog (it hung on macOS
-  CI); tests time out after 120 s and CI jobs after 20 minutes.
+- Tests: the GUI smoke test is skipped on hosted macOS CI runners, where Tk blocks
+  forever inside `update()` (set `ARUCO_GUI_TESTS=1` to run it on a real Mac); it no
+  longer opens the modal success dialog. Tests time out after 120 s and CI jobs after
+  20 minutes.
 
 ## v0.1.0 (2026-10-22)
 

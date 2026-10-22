@@ -12,6 +12,11 @@ tk = pytest.importorskip("tkinter")
 def app():
     if sys.platform.startswith("linux") and not os.environ.get("DISPLAY"):
         pytest.skip("no X display (run under xvfb-run)")
+    if sys.platform == "darwin" and os.environ.get("CI") and not os.environ.get("ARUCO_GUI_TESTS"):
+        # Hosted macOS runners have no usable window server session: Tk opens
+        # a root but later blocks forever inside update(). Set ARUCO_GUI_TESTS=1
+        # to run it on a Mac with a real display.
+        pytest.skip("macOS CI runner has no usable display (set ARUCO_GUI_TESTS=1 to force)")
     try:
         root = tk.Tk()
     except tk.TclError as exc:
