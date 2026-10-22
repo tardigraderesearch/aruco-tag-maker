@@ -11,7 +11,7 @@ from tkinter import filedialog, messagebox, ttk
 
 from PIL import Image, ImageTk
 
-from . import __version__
+from . import __version__, theme
 from .exporter import existing_conflicts, export
 from .marker import marker_image
 from .platform_utils import enable_hidpi, open_folder
@@ -34,7 +34,7 @@ from .settings import (
 from .verify import verify_folder
 
 THUMB_PX = 48
-ERROR_FG = "#c62828"
+ERROR_FG = theme.ERROR
 DEFAULT_COUNT = 10
 
 
@@ -85,12 +85,7 @@ class TagMakerApp:
     # ---------------------------------------------------------------- layout
     def _build(self) -> None:
         root = self.root
-        style = ttk.Style(root)
-        if "clam" in style.theme_names() and root.tk.call("tk", "windowingsystem") == "x11":
-            style.theme_use("clam")
-        style.configure("Big.TLabel", font=("TkDefaultFont", 11, "bold"))
-        style.configure("Error.TLabel", foreground=ERROR_FG)
-        style.configure("Accent.TButton", font=("TkDefaultFont", 11, "bold"), padding=(14, 6))
+        theme.apply(root)
 
         outer = ttk.Frame(root, padding=12)
         outer.pack(fill="both", expand=True)
@@ -108,7 +103,7 @@ class TagMakerApp:
         self.size_spin = ttk.Spinbox(top, from_=MIN_TAG_MM, to=MAX_TAG_MM, increment=1, width=7,
                                      textvariable=self.size_var)
         self.size_spin.grid(row=0, column=3, padx=6)
-        ttk.Label(top, textvariable=self.size_hint, foreground="#555").grid(row=0, column=4, sticky="w")
+        ttk.Label(top, textvariable=self.size_hint, style="Muted.TLabel").grid(row=0, column=4, sticky="w")
         ttk.Label(top, textvariable=self.count_error, style="Error.TLabel").grid(
             row=1, column=0, columnspan=5, sticky="w")
 
@@ -136,7 +131,7 @@ class TagMakerApp:
         listbox.grid(row=2, column=0, sticky="nsew")
         listbox.columnconfigure(0, weight=1)
         listbox.rowconfigure(0, weight=1)
-        self.canvas = tk.Canvas(listbox, highlightthickness=0, borderwidth=0)
+        self.canvas = tk.Canvas(listbox, highlightthickness=0, borderwidth=0, background=theme.BG)
         scroll = ttk.Scrollbar(listbox, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=scroll.set)
         self.canvas.grid(row=0, column=0, sticky="nsew")
@@ -445,14 +440,14 @@ class TagMakerApp:
         self.root.configure(cursor="watch" if busy else "")
 
     def _success_dialog(self, folder: Path, count: int) -> None:
-        dialog = tk.Toplevel(self.root)
+        dialog = tk.Toplevel(self.root, background=theme.BG)
         dialog.title("Export complete")
         dialog.transient(self.root)
         frame = ttk.Frame(dialog, padding=16)
         frame.pack(fill="both", expand=True)
         ttk.Label(frame, text=f"{count} tags exported and verified", style="Big.TLabel").pack(anchor="w")
         ttk.Label(frame, text=str(folder.resolve())).pack(anchor="w", pady=(4, 2))
-        ttk.Label(frame, text="stl/  png/  markers.json  markers.py", foreground="#555").pack(anchor="w")
+        ttk.Label(frame, text="stl/  png/  markers.json  markers.py", style="Muted.TLabel").pack(anchor="w")
         buttons = ttk.Frame(frame)
         buttons.pack(fill="x", pady=(12, 0))
 
