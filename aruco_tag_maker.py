@@ -1,14 +1,12 @@
-"""ArUco Tag Maker bootstrap, shared by run.sh, run.command and run.bat.
+"""aruco-tag-maker. To use:  python aruco_tag_maker.py  [command]
 
-The platform launchers only find a Python 3.11+ and hand over to this file,
-so every OS gets the same behaviour:
+One file, any OS. It checks Python and Tk, and if the libraries are missing it asks
+before installing them into a private .venv next to this file (nothing system-wide).
+When everything is there it says so and starts. With no command it opens the
+tag-maker window; any command (generate, verify, doctor, ...) passes straight through.
 
-1. check Tk (needed for the window, not for generate / verify / doctor),
-2. make a private .venv next to this file (first run only),
-3. install / update the package only when pyproject.toml or Python changed,
-4. launch the app, passing any arguments straight through.
-
-Standard library only. Nothing is installed system-wide.
+-y / --yes, or a non-interactive run, installs without asking.
+Standard library only above the install step.
 """
 
 import hashlib
@@ -18,10 +16,20 @@ import shutil
 import subprocess
 import sys
 
+if __name__ == "aruco_tag_maker":
+    # Imported (not run) from this folder: this file has the package's name, so hand
+    # the import over to the real package in src/ instead of shadowing it.
+    import importlib.util
+
+    _init = os.path.join(os.path.dirname(os.path.abspath(__file__)), "src", "aruco_tag_maker", "__init__.py")
+    _spec = importlib.util.spec_from_file_location(
+        "aruco_tag_maker", _init, submodule_search_locations=[os.path.dirname(_init)])
+    _pkg = importlib.util.module_from_spec(_spec)
+    sys.modules["aruco_tag_maker"] = _pkg
+    _spec.loader.exec_module(_pkg)
+
 APP = "aruco-tag-maker"
 MODULE = "aruco_tag_maker"
-DISPLAY_NAME = "ArUco Tag Maker"
-LIBRARIES = "numpy, OpenCV, manifold3d, Pillow"
 IMPORTS = "import aruco_tag_maker, cv2, manifold3d, numpy, PIL"
 NO_WINDOW_COMMANDS = {"generate", "verify", "doctor", "-h", "--help", "--version"}
 MIN_PYTHON = (3, 11)
@@ -32,7 +40,7 @@ WINDOWS = os.name == "nt"
 VPY = os.path.join(VENV, "Scripts", "python.exe") if WINDOWS else os.path.join(VENV, "bin", "python")
 STAMP = os.path.join(VENV, ".%s-installed" % APP)
 SYSTEM = platform.system()
-RUN = "run.bat" if WINDOWS else "./run.sh"
+RUN = "python aruco_tag_maker.py"
 
 
 class Problem(Exception):
@@ -43,7 +51,7 @@ class Problem(Exception):
 
 
 def say(message):
-    print("[%s] %s" % (APP, message), flush=True)
+    print("[%s] %s" % (APP, message), file=sys.stderr, flush=True)
 
 
 def python_fix():
@@ -56,7 +64,7 @@ def python_fix():
     if SYSTEM == "Darwin":
         return [
             "Install Python 3.12 from https://www.python.org/downloads/macos/",
-            "(or with Homebrew: brew install python@3.12 python-tk@3.12), then run ./run.sh again.",
+            "(or with Homebrew: brew install python@3.12 python-tk@3.12), then run python3 aruco_tag_maker.py again.",
         ]
     return [
         "Install Python 3.11 or newer with your package manager, for example:",
@@ -65,7 +73,7 @@ def python_fix():
         "  Arch:          sudo pacman -S python tk",
         "  openSUSE:      sudo zypper install python3 python3-tk",
         "  Alpine:        sudo apk add python3 py3-tkinter",
-        "Then run ./run.sh again.",
+        "Then run python3 aruco_tag_maker.py again.",
     ]
 
 
@@ -73,7 +81,7 @@ def tk_fix():
     if WINDOWS:
         return [
             "Re-run the Python installer from https://www.python.org/downloads/windows/",
-            'choose "Modify" and tick "tcl/tk and IDLE". Then run run.bat again.',
+            'choose "Modify" and tick "tcl/tk and IDLE". Then run python aruco_tag_maker.py again.',
         ]
     if SYSTEM == "Darwin":
         return [
@@ -124,14 +132,31 @@ def check_tk(args):
             raise Problem(
                 "This Python has no tkinter, which the app window needs.",
                 "Fix it with:",
-                *(tk_fix() + ["(Without Tk you can still script it: %s generate --names names.txt)" % RUN])
+                *(tk_fix() + ["(Without Tk you can still script it: %s generate --help)" % RUN])
             )
-        say("Note: tkinter is missing; fine for '%s', but the window will not open." % args[0])
+
+
+ASSUME_YES = False
+
+
+def confirm(what):
+    """Ask before installing. Yes by default; non-interactive runs and -y skip the question."""
+    if ASSUME_YES or not sys.stdin.isatty():
+        say("%s (auto-yes)." % what)
+        return
+    try:
+        answer = input("[%s] %s Install now? [Y/n] " % (APP, what)).strip().lower()
+    except EOFError:
+        answer = ""
+    if answer not in ("", "y", "yes"):
+        say("Nothing installed. Run %s again when you're ready." % RUN)
+        sys.exit(0)
 
 
 def ensure_venv():
     if os.path.isfile(VPY) and quiet_ok([VPY, "-c", "import sys"]):
         return
+    confirm("aruco-tag-maker needs its Python libraries (numpy, OpenCV, manifold3d, Pillow) in a private .venv.")
     say("First run: creating a private Python environment in .venv (one time only)...")
     shutil.rmtree(VENV, ignore_errors=True)
     if subprocess.call([sys.executable, "-m", "venv", VENV]) != 0 or not os.path.isfile(VPY):
@@ -160,11 +185,12 @@ def ensure_installed():
             have = handle.read().strip()
     except OSError:
         have = ""
-    if want == have and quiet_ok([VPY, "-c", IMPORTS]):
-        say("Everything is already installed.")
+    if want == have and quiet_ok([VPY, "-P", "-c", IMPORTS]):
+        say("All dependencies present. Good to go.")
         return
-    say("Installing %s and its libraries (%s)..." % (APP, LIBRARIES))
-    say("This needs internet once and takes a minute or two.")
+    if have:
+        confirm("aruco-tag-maker's libraries need updating.")
+    say("Installing %s and its libraries. This needs internet once." % APP)
     pip = [VPY, "-m", "pip", "install", "--disable-pip-version-check", "--quiet", "--upgrade"]
     if subprocess.call(pip + ["pip"]) != 0:
         say("Could not upgrade pip; continuing with the bundled one.")
@@ -174,30 +200,34 @@ def ensure_installed():
             "Check your internet connection and run %s again." % RUN,
             "To start over completely, delete the .venv folder.",
         )
-    if subprocess.call([VPY, "-c", IMPORTS]) != 0:
+    if subprocess.call([VPY, "-P", "-c", IMPORTS]) != 0:
         raise Problem(
-            "The libraries installed but do not import (see the error above).",
+            "aruco-tag-maker installed but does not import (see the error above).",
             "Delete the .venv folder and run %s again." % RUN,
         )
     with open(STAMP, "w", encoding="utf-8") as handle:
         handle.write(want + "\n")
-    say("Install complete.")
+    say("Install complete. Good to go.")
 
 
 def launch(args):
     if not args:
-        say("Opening the %s window..." % DISPLAY_NAME)
-    cmd = [VPY, "-m", MODULE] + args
+        say("Opening the ArUco Tag Maker window...")
+    # -P: never import from the current folder, so aruco_tag_maker.py here can't shadow the package.
+    cmd = [VPY, "-P", "-m", MODULE] + args
     if not WINDOWS:
         os.execv(VPY, cmd)
     code = subprocess.call(cmd)
     if code != 0:
-        print("", flush=True)
-        say("The app exited with code %d." % code)
+        print("", file=sys.stderr, flush=True)
+        say("aruco-tag-maker exited with code %d." % code)
     return code
 
 
 def main(args):
+    global ASSUME_YES
+    if args[:1] in (["-y"], ["--yes"]):
+        ASSUME_YES, args = True, args[1:]
     try:
         check_python()
         check_tk(args)

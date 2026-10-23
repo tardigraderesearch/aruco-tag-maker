@@ -2,8 +2,9 @@
 
 ## Unreleased
 
-- Launchers: `run.sh`, `run.command` and `run.bat` now only find Python 3.11+ and
-  hand over to a shared `launcher.py`, so setup behaves the same on every OS. Fixes
+- One entry point: `python aruco_tag_maker.py` on every OS. It asks (Y/n) before
+  installing its libraries into a private `.venv`, or says it's good to go and starts.
+  `run.sh`, `run.bat`, `run.command` and `launcher.py` are gone. This also fixes
   `run.bat` failing on Windows because cmd mis-parsed inline Python.
 - Tests: the GUI smoke test is skipped on hosted macOS CI runners, where Tk blocks
   forever inside `update()` (set `ARUCO_GUI_TESTS=1` to run it on a real Mac); it no
@@ -27,6 +28,6 @@ First release.
   the right id, and every mesh must be a closed 2-manifold.
 - Scripting path: `aruco-tag-maker generate --names names.txt`, plus `verify` and
   `doctor` commands.
-- Zero-setup launchers: `run.sh` (Linux/macOS), `run.command` (macOS double-click),
-  `run.bat` (Windows).
+- Zero-setup launchers for Linux, macOS and Windows (since replaced by
+  `python aruco_tag_maker.py`).
 - CI on Linux, Windows and macOS with Python 3.11 and 3.12.

@@ -26,10 +26,10 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y xvfb
       - name: Tests (Linux, under Xvfb so the GUI smoke test runs)
         if: runner.os == 'Linux'
-        run: xvfb-run -a python -m pytest -v
+        run: xvfb-run -a pytest -v
       - name: Tests
         if: runner.os != 'Linux'
-        run: python -m pytest -v
+        run: pytest -v
       - name: Example export + verify
         run: |
           aruco-tag-maker generate --names examples/names.txt --out ci-export
@@ -51,19 +51,10 @@ jobs:
       - name: Tk for the system Python (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y python3-tk
-      - name: run.sh from a fresh clone (twice; second run must skip the install)
-        if: runner.os != 'Windows'
+      - name: python aruco_tag_maker.py from a fresh clone (twice; second run must say good to go)
+        shell: bash
         run: |
-          ./run.sh doctor
-          ./run.sh doctor | tee second.txt
-          grep -q "already installed" second.txt
-          ./run.sh generate --names examples/names.txt --out launcher-export
-      - name: run.bat from a fresh clone (twice; second run must skip the install)
-        if: runner.os == 'Windows'
-        shell: cmd
-        run: |
-          call run.bat doctor < NUL || exit /b 1
-          call run.bat doctor < NUL > second.txt || exit /b 1
-          type second.txt
-          findstr /c:"already installed" second.txt || exit /b 1
-          call run.bat generate --names examples\names.txt --out launcher-export < NUL || exit /b 1
+          python aruco_tag_maker.py doctor < /dev/null
+          python aruco_tag_maker.py doctor < /dev/null 2> second.txt
+          cat second.txt
+          grep -q "Good to go" second.txt

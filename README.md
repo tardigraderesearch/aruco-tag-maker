@@ -1,5 +1,10 @@
 # ArUco Tag Maker
 
+**To use:** `cd aruco_tag_maker`, then run `python aruco_tag_maker.py`
+
+It checks what it needs, asks before installing anything (Y/n), or says it's good to go
+and starts. Linux, Windows and macOS. (`python3` on systems without a `python` command.)
+
 Name your ArUco tags in a small desktop app and get **printable two-colour STL
 tiles** plus a **name-to-id lookup** your own code can import.
 
@@ -24,26 +29,26 @@ every mesh must be a closed, watertight solid.
 
 Download or clone this repository, then:
 
-| Platform | Start it |
-| --- | --- |
-| **Linux** | `./run.sh` |
-| **macOS** | double-click `run.command` (or `./run.sh` in Terminal) |
-| **Windows** | double-click `run.bat` |
+```bash
+cd aruco_tag_maker
+python aruco_tag_maker.py
+```
 
-That is all. Each launcher only finds Python and hands over to `launcher.py`
-(standard library only), so the steps are the same on every system:
+(`python3` on systems without a `python` command.) It is one standard-library-only
+file, so the steps are the same on every system:
 
-1. finds Python 3.11 or newer (and tells you exactly what to install if there is none),
+1. checks for Python 3.11 or newer (and tells you exactly what to install if there is none),
 2. checks that Tk (the window toolkit) is available, with the fix for your system if not,
-3. creates a private `.venv` next to the launcher, the first time only,
-4. installs the app and its libraries into it, only when they changed since the last run,
-5. opens the window.
+3. asks before installing: "Install now? [Y/n]" (`-y` or a non-interactive run says yes),
+4. creates a private `.venv` next to the file and installs the app and its libraries
+   into it, only when they changed since the last run,
+5. says "All dependencies present. Good to go." and opens the window.
 
 The first launch needs internet and takes a minute or two; after that it starts
 straight away. Nothing is installed system-wide and it never asks for admin rights.
 To start over, delete the `.venv` folder.
 
-If Tk is missing the launcher prints the fix, for example:
+If Tk is missing it prints the fix, for example:
 
 | System | Command |
 | --- | --- |
@@ -103,8 +108,8 @@ aruco-tag-maker doctor             # check Python, libraries and Tk
 ```
 
 `names.txt` has one name per line; blank lines and `#` comments are ignored. The
-same commands work through the launchers, e.g. `./run.sh generate --names ...` or
-`run.bat generate --names ...`, and they do not need Tk.
+same commands work through the one file, e.g. `python aruco_tag_maker.py generate --names ...`,
+and they do not need Tk.
 
 ## Output
 
@@ -208,7 +213,7 @@ Layout: `settings.py` (limits, validation, pagination), `marker.py` (bit pattern
 and images), `mesh.py` (STL geometry via [manifold3d](https://github.com/elalish/manifold)),
 `exporter.py`, `verify.py`, `gui.py` (tkinter only, no logic of its own), `cli.py`.
 CI runs the tests on Linux, Windows and macOS with Python 3.11 and 3.12, and runs
-the launchers from a fresh checkout on each platform.
+`python aruco_tag_maker.py` from a fresh checkout on each platform.
 
 ## License
 
