@@ -58,7 +58,7 @@ If Tk is missing the launcher prints the fix, for example:
 ### Alternative: pipx
 
 ```bash
-pipx install git+https://github.com/evilhobo1911/aruco-tag-maker
+pipx install git+https://github.com/tardigraderesearch/aruco-tag-maker
 aruco-tag-maker            # opens the window
 ```
 

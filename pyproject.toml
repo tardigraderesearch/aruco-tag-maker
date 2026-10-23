@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "Name your ArUco tags in a small desktop app and export printable two-colour STL tiles plus a name-to-id lookup."
 readme = "README.md"
 license = { text = "MIT" }
-authors = [{ name = "evilhobo1911" }]
+authors = [{ name = "tardigraderesearch" }]
 requires-python = ">=3.11"
 keywords = ["aruco", "fiducial", "marker", "opencv", "stl", "3d-printing", "computer-vision"]
 classifiers = [
@@ -37,8 +37,8 @@ dependencies = [
 test = ["pytest>=8", "pytest-timeout>=2.2", "trimesh>=4.0"]
 
 [project.urls]
-Homepage = "https://github.com/evilhobo1911/aruco-tag-maker"
-Issues = "https://github.com/evilhobo1911/aruco-tag-maker/issues"
+Homepage = "https://github.com/tardigraderesearch/aruco-tag-maker"
+Issues = "https://github.com/tardigraderesearch/aruco-tag-maker/issues"
 
 [project.scripts]
 aruco-tag-maker = "aruco_tag_maker.cli:main"
