@@ -213,8 +213,3 @@ the launchers from a fresh checkout on each platform.
 ## License
 
 MIT, see [LICENSE](LICENSE).
-
-## How this was built
-AI is used here as a tool to speed up implementation. I design the system and
-define what "working" means. When issues are found, they're identified, and
-ARI — my own agent system — fixes them against those checks.
