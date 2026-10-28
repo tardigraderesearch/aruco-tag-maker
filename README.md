@@ -2,9 +2,9 @@
 
 **Printable markers that let a camera know exactly where an object is and how it's rotated.**
 
-[![Demo: name tags in the app, get a 3D-printable tile, stick it on a figure, and the camera tracks every tag](docs/demo.gif)](docs/demo.mp4)
+[![Demo teaser: a camera tracks the tags on a robot arm, tags are named in the app and exported as 3D-printable tiles, and the camera finds every tag on a posed figure](docs/demo.gif)](docs/demo.mp4)
 
-*Real run of the app, the STL it made, and printed tags being tracked. [Watch the 25-second video (MP4)](docs/demo.mp4).*
+*Real footage only: the app running, renders of the STL files it made, and printed tags tracked by a camera in PoseBridge, robo_prober and Digital Twin Generator. [Watch the 44-second video (MP4)](docs/demo.mp4).*
 
 - **What it is:** a free desktop app (Linux, Windows, macOS) that makes ArUco tags, the black-and-white squares that cameras and robots use as landmarks.
 - **What it does:** you type how many tags you need and a name for each one ("head", "left_gripper"). It writes a 3D-printable file per tag and a lookup file your own code can import.
