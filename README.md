@@ -1,14 +1,14 @@
-# ArUco Tag Maker
+<p align="center"><img src="docs/banner.png" width="100%" alt="ArUco Tag Maker: printable markers that tell a camera exactly where an object is and which way it faces"></p>
 
-**Printable markers that let a camera know exactly where an object is and how it's rotated.**
+**What it is.** A free desktop app (Linux, Windows, macOS) that makes ArUco tags, the black-and-white squares that cameras and robots use as landmarks.
 
-[![Demo teaser: a camera tracks the tags on a robot arm, tags are named in the app and exported as 3D-printable tiles, and the camera finds every tag on a posed figure](docs/demo.gif)](docs/demo.mp4)
+**What it does.** You type how many tags you need and a name for each one ("head", "left_gripper"). It writes a 3D-printable file per tag and a lookup file your own code can import.
 
-*Real footage only: the app running, renders of the STL files it made, and printed tags tracked by a camera in PoseBridge, robo_prober and Digital Twin Generator. [Watch the 44-second video (MP4)](docs/demo.mp4).*
+**Why it matters.** Stick a tag on anything and an ordinary webcam can tell where that thing is and which way it faces. That is how a hand-posed figure becomes a digital animation, or how a robot's joints get measured without guesswork.
 
-- **What it is:** a free desktop app (Linux, Windows, macOS) that makes ArUco tags, the black-and-white squares that cameras and robots use as landmarks.
-- **What it does:** you type how many tags you need and a name for each one ("head", "left_gripper"). It writes a 3D-printable file per tag and a lookup file your own code can import.
-- **Why it matters:** stick a tag on anything and an ordinary webcam can tell where that thing is and which way it faces. That is how a hand-posed figure becomes a digital animation, or how a robot's joints get measured without guesswork.
+<p align="center"><a href="docs/demo.mp4"><img src="docs/demo.gif" width="100%" alt="Demo: a camera tracks the tags on a robot arm, tags are named in the app and exported as 3D-printable tiles, and the camera finds every tag on a posed figure"></a></p>
+
+*Real footage: the app running, renders of the STL files it made, and printed tags tracked by a camera. [Watch the 44-second video (MP4)](docs/demo.mp4).*
 
 ## Where the tags are used
 
@@ -16,6 +16,8 @@
 |---|---|---|
 | [![Tags on a posable figure and turntable, each one found by the camera](docs/uses/use-posebridge.jpg)](https://github.com/tardigraderesearch/posebridge) | [![Tags on a robot arm, each one found by the camera](docs/uses/use-robo-prober.jpg)](https://github.com/tardigraderesearch/robo_prober) | [![A robot scan split into its moving parts](docs/uses/use-digital-twin.jpg)](https://github.com/tardigraderesearch/digital-twin-generator) |
 | **Pose a figure, get an animation.** Tags on a 3D-printed figure let PoseBridge rebuild its pose on a Blender rig and export it to Unreal Engine. | **Map an unknown robot.** A camera watches the tags while each servo is nudged, recording which joint moved. It reads this app's `markers.json` directly. | **Build a simulation model of a real robot.** Tags tie the camera's view of each moving joint to a 3D scan, so the scan can be cut into parts and turned into a URDF. |
+
+Want to know where tags should go before printing them? Try the placement on a 3D model first in **[ArUco Simulator](https://github.com/tardigraderesearch/aruco_simulator)**.
 
 Coloured axes in the first two pictures are real detections: OpenCV found each printed tag and its 3D orientation.
 
@@ -25,10 +27,10 @@ closed, printable solid.
 
 ## Quickstart
 
-Download or clone this repository, then:
+Clone this repository, then run the launcher:
 
 ```bash
-cd aruco_tag_maker
+git clone https://github.com/tardigraderesearch/aruco-tag-maker && cd aruco-tag-maker
 python aruco_tag_maker.py
 ```
 
