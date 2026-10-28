@@ -1,29 +1,27 @@
 # ArUco Tag Maker
 
-**To use:** `cd aruco_tag_maker`, then run `python aruco_tag_maker.py`
+**Printable markers that let a camera know exactly where an object is and how it's rotated.**
 
-It checks what it needs, asks before installing anything (Y/n), or says it's good to go
-and starts. Linux, Windows and macOS. (`python3` on systems without a `python` command.)
+[![Demo: name tags in the app, get a 3D-printable tile, stick it on a figure, and the camera tracks every tag](docs/demo.gif)](docs/demo.mp4)
 
-Name your ArUco tags in a small desktop app and get **printable two-colour STL
-tiles** plus a **name-to-id lookup** your own code can import.
+*Real run of the app, the STL it made, and printed tags being tracked. [Watch the 25-second video (MP4)](docs/demo.mp4).*
 
-![The ArUco Tag Maker window: tag count and size at the top, options, a page of 20 named tags with marker previews, and the export folder](docs/screenshot.png)
+- **What it is:** a free desktop app (Linux, Windows, macOS) that makes ArUco tags, the black-and-white squares that cameras and robots use as landmarks.
+- **What it does:** you type how many tags you need and a name for each one ("head", "left_gripper"). It writes a 3D-printable file per tag and a lookup file your own code can import.
+- **Why it matters:** stick a tag on anything and an ordinary webcam can tell where that thing is and which way it faces. That is how a hand-posed figure becomes a digital animation, or how a robot's joints get measured without guesswork.
 
-## Why
+## Where the tags are used
 
-ArUco markers are cheap, robust fiducials, but a pile of `id_17.stl` files and a
-sticky note saying "17 is the left gripper" does not scale. This tool keeps the
-names and the ids together from the start:
+| [PoseBridge](https://github.com/tardigraderesearch/posebridge) | [robo_prober](https://github.com/tardigraderesearch/robo_prober) | [Digital Twin Generator](https://github.com/tardigraderesearch/digital-twin-generator) |
+|---|---|---|
+| [![Tags on a posable figure and turntable, each one found by the camera](docs/uses/use-posebridge.jpg)](https://github.com/tardigraderesearch/posebridge) | [![Tags on a robot arm, each one found by the camera](docs/uses/use-robo-prober.jpg)](https://github.com/tardigraderesearch/robo_prober) | [![A robot scan split into its moving parts](docs/uses/use-digital-twin.jpg)](https://github.com/tardigraderesearch/digital-twin-generator) |
+| **Pose a figure, get an animation.** Tags on a 3D-printed figure let PoseBridge rebuild its pose on a Blender rig and export it to Unreal Engine. | **Map an unknown robot.** A camera watches the tags while each servo is nudged, recording which joint moved. It reads this app's `markers.json` directly. | **Build a simulation model of a real robot.** Tags tie the camera's view of each moving joint to a 3D scan, so the scan can be cut into parts and turned into a URDF. |
 
-- you type how many tags you need (1 to 99) and a name for each one,
-- it writes one STL per tag **named after the tag**, a PNG preview, and
-- a `markers.json` / `markers.py` that maps names to ids, so your detection code
-  says `"left_gripper"` instead of `17`.
+Coloured axes in the first two pictures are real detections: OpenCV found each printed tag and its 3D orientation.
 
-Every export is checked before it is reported as done: each PNG and a top-down
-re-render of each STL's marker face must decode with OpenCV to the expected id, and
-every mesh must be a closed, watertight solid.
+Every export is checked before it is reported as done: each tag image and a
+top-down render of each STL must decode to the right id, and every mesh must be a
+closed, printable solid.
 
 ## Quickstart
 
@@ -70,6 +68,8 @@ aruco-tag-maker            # opens the window
 `pip install .` inside a virtual environment works the same way.
 
 ## Using the app
+
+![The ArUco Tag Maker window: tag count and size at the top, a page of named tags with marker previews, and the export folder](docs/screenshot.png)
 
 1. **How many tags?** 1 to 99.
 2. **Tag size (mm):** the side of the black square, 5 to 300 mm (default 30). The
